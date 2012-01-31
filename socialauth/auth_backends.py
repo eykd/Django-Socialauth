@@ -29,6 +29,9 @@ LINKEDIN_CONSUMER_SECRET = getattr(settings, 'LINKEDIN_CONSUMER_SECRET', '')
 
 class OpenIdBackend:
     def authenticate(self, openid_key, request, provider, user=None):
+        logger.info("request.GET: %s", request.GET)
+        logger.info("request.POST: %s", request.POST)
+        logger.info('------------------------------------------ Authenticating against OpenID')
         logger.info("openid_key: %s", openid_key)
         logger.info("provider: %s", provider)
         try:

@@ -6,3 +6,4 @@ localsettings.py
 .svn/
 .svn/*
 data.db
+django_socialauth.egg-info/

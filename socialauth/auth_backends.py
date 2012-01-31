@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger('socialauth.auth_backends')
+
 from django.contrib.auth.models import User
 from django.conf import settings
 from facebook import Facebook
@@ -26,8 +29,19 @@ LINKEDIN_CONSUMER_SECRET = getattr(settings, 'LINKEDIN_CONSUMER_SECRET', '')
 
 class OpenIdBackend:
     def authenticate(self, openid_key, request, provider, user=None):
+        logger.info("request.GET: %s", request.GET)
+        logger.info("request.POST: %s", request.POST)
+        logger.info('------------------------------------------ Authenticating against OpenID')
+        logger.info("openid_key: %s", openid_key)
+        logger.info("provider: %s", provider)
         try:
             assoc = UserAssociation.objects.get(openid_key = openid_key)
+            logger.info('Found a UserAssociation (OpenidProfile)')
+            logger.info("assoc.openid_key: %s", assoc.openid_key)
+            logger.info("assoc.user.username: %s", assoc.user.username)
+            logger.info("assoc.nickname: %s", assoc.nickname)
+            logger.info("assoc.is_username_valid: %s", assoc.is_username_valid)
+            logger.info("assoc.email: %s", assoc.email)
             return assoc.user
         except UserAssociation.DoesNotExist:
             #fetch if openid provider provides any simple registration fields
@@ -70,6 +84,12 @@ class OpenIdBackend:
                 assoc.is_username_valid = True
             assoc.save()
             
+            logger.info("assoc.openid_key: %s", assoc.openid_key)
+            logger.info("assoc.user.username: %s", assoc.user.username)
+            logger.info("assoc.nickname: %s", assoc.nickname)
+            logger.info("assoc.is_username_valid: %s", assoc.is_username_valid)
+            logger.info("assoc.email: %s", assoc.email)
+
             #Create AuthMeta
             auth_meta = AuthMeta(user = user, provider = provider, 
                 provider_model='OpenidProfile', provider_id=assoc.pk)

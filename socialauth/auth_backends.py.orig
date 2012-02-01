@@ -35,17 +35,21 @@ class OpenIdBackend:
         logger.info("openid_key: %s", openid_key)
         logger.info("provider: %s", provider)
         try:
+<<<<<<< HEAD
             assoc = OpenidProfile.objects.get(openid_key = openid_key)
-            logger.info('Found a OpenidProfile')
+=======
+            assoc = UserAssociation.objects.get(openid_key = openid_key)
+            logger.info('Found a UserAssociation (OpenidProfile)')
             logger.info("assoc.openid_key: %s", assoc.openid_key)
             logger.info("assoc.user.username: %s", assoc.user.username)
             logger.info("assoc.nickname: %s", assoc.nickname)
             logger.info("assoc.is_username_valid: %s", assoc.is_username_valid)
             logger.info("assoc.email: %s", assoc.email)
+>>>>>>> a2d0ac8601ac7df81701c3f9539da8eed31da412
             return assoc.user
         except OpenidProfile.DoesNotExist:
             #fetch if openid provider provides any simple registration fields
-            logger.error('Creating a OpenidProfile')
+            logger.error('Creating a UserAssociation (OpenidProfile)')
             nickname = None
             email = None
             if request.openid and request.openid.sreg:

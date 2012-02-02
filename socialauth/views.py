@@ -397,5 +397,5 @@ def consolidate_google_complete(request):
 
 # On Federation
 def consolidate_google_failed(request):
-    return HttpResponse('Failed.')
+    return render_to_response('socialauth/consolidate_google_failed.html', context_instance=RequestContext(request))
 

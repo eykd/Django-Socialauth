@@ -228,7 +228,7 @@ def openid_done(request, provider=None):
                             + '?' + urllib.urlencode(data))
 
                 else:
-                    logger.error('Google OpenID emails did not match. Failing back to my.crossway.org.')
+                    logger.error('Google OpenID emails did not match. %s / %s' % (request.session['google_email'], openid_profile.email))
                     return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_FAILED)
 
             # From Federation
@@ -425,7 +425,8 @@ def consolidate_google_complete(request):
                 logger.info('Service is %s'% request.session.get('service'))
                 return HttpResponseRedirect(reverse('socialauth_cas_login_page'))
             else:
-                logger.error('OpenID emails or keys did not match!')
+                logger.error('OpenID emails or keys did not match! %s/%s -- %s/%s' % (openid_profile.email, email,
+                                                                                      openid_profile.openid_key, openid_key))
     else:
         logger.error('Signatures did not match!')
 

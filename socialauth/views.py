@@ -1,4 +1,5 @@
 import logging
+logger = logging.getLogger('socialauth.views')
 
 import urllib
 import urllib2
@@ -215,7 +216,7 @@ def openid_done(request, provider=None):
                     del request.session['google_openid_key']
 
                     #FIXME:  Is this secure?
-                    return HttpResponseRedirect('http://federation:8111/account/social/consolidate/google/complete/' \
+                    return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_COMPLETE \
                             + '?' + urllib.urlencode({'username': user.username,
                                                       'email': openid_profile.email,
                                                       'openid_key': federation_openid_key }))
@@ -228,9 +229,8 @@ def openid_done(request, provider=None):
                 session = dict(request.session)
                 login(request, user)
                 restore_session(request, session)
-                return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_LOGIN \
-                        + '?' + urllib.urlencode({'email': openid_profile.email, 'openid_key': openid_key}))
-            
+                return HttpResponseRedirect(reverse('consolidate_google_confirm'))
+
             # if user is authenticated then login user through CAS
             elif user:
                 # Restore unique session keys from old session
@@ -370,6 +370,26 @@ def consolidate_google(request):
 
     return HttpResponseRedirect(reverse('socialauth_google_login'))
 
+def consolidate_google_confirm(request):
+    openid_profile = OpenidProfile.objects.get(user=request.user)
+
+    return render_to_response('socialauth/google_consolidate_confirm.html',
+                                  {'user': request.user},
+                                  context_instance=RequestContext(request))
+
+def consolidate_google_confirm_complete(request):
+    openid_profile = OpenidProfile.objects.get(user=request.user)
+    return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_LOGIN + '?' \
+            + urllib.urlencode({'email': openid_profile.email,
+                                'openid_key': openid_profile.openid_key}))
+
+def consolidate_google_skip(request):
+    openid_profile = OpenidProfile.objects.get(user=request.user)
+    openid_profile.needs_google_crossdomain_merge = False
+    openid_profile.save()
+
+    return HttpResponseRedirect(reverse('socialauth_cas_login_page'))
+
 # On Federation (redirect from Apocalypse)
 def consolidate_google_complete(request):
     """ Verifies params to the current User
@@ -391,7 +411,8 @@ def consolidate_google_complete(request):
                                                                    identifier=username, user=request.user)
             openid_profile.needs_google_crossdomain_merge = False
             openid_profile.save()
-            return HttpResponseRedirect('/account/')
+            logger.info('Service is %s'% request.session.get('service'))
+            return HttpResponseRedirect(reverse('socialauth_cas_login_page'))
 
     return HttpResponseRedirect(reverse('consolidate_google_failed'))
 

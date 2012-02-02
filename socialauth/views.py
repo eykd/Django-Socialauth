@@ -20,6 +20,7 @@ except ImportError:
 
 from socialauth.models import OpenidProfile, AuthMeta, FacebookUserProfile, TwitterUserProfile, LinkedInUserProfile
 from socialauth.forms import EditProfileForm
+from socialauth import helpers
 
 """
 from socialauth.models import YahooContact, TwitterContact, FacebookContact,\
@@ -216,12 +217,18 @@ def openid_done(request, provider=None):
                     del request.session['google_openid_key']
 
                     #FIXME:  Is this secure?
+                    data = {'username': user.username,
+                            'email': openid_profile.email,
+                            'openid_key': federation_openid_key,
+                            'signature': helpers.sign(user.username + openid_profile.email + federation_openid_key,
+                                                      settings.CONSOLIDATE_GOOGLE_SECRET),
+                            }
+                    
                     return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_COMPLETE \
-                            + '?' + urllib.urlencode({'username': user.username,
-                                                      'email': openid_profile.email,
-                                                      'openid_key': federation_openid_key }))
+                            + '?' + urllib.urlencode(data))
 
                 else:
+                    logger.error('Google OpenID emails did not match. Failing back to my.crossway.org.')
                     return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_FAILED)
 
             # From Federation
@@ -397,23 +404,32 @@ def consolidate_google_complete(request):
         Adds the identifier from the collaborating service
     """
 
-    username = request.GET.get('username', None)
-    email = request.GET.get('email', None)
-    openid_key = request.GET.get('openid_key', None)
+    username = request.GET.get('username', '')
+    email = request.GET.get('email', '')
+    openid_key = request.GET.get('openid_key', '')
+    signature = request.GET.get('signature', '')
+    verify_signature = helpers.sign(username + email + openid_key,
+                                    settings.CONSOLIDATE_GOOGLE_SECRET)
 
-    try:
-        openid_profile = OpenidProfile.objects.get(user=request.user)
-    except OpenidProfile.DoesNotExist:
-        pass
+    if verify_signature == signature:
+        try:
+            openid_profile = OpenidProfile.objects.get(user=request.user)
+        except OpenidProfile.DoesNotExist:
+            logger.error('OpenID profile for user does not exist!')
+        else:
+            if openid_profile.email == email and openid_profile.openid_key == openid_key:
+                signals.consolidate_google_complete_add_identifer.send(sender=consolidate_google_complete,
+                                                                       identifier=username, user=request.user)
+                openid_profile.needs_google_crossdomain_merge = False
+                openid_profile.save()
+                logger.info('Service is %s'% request.session.get('service'))
+                return HttpResponseRedirect(reverse('socialauth_cas_login_page'))
+            else:
+                logger.error('OpenID emails or keys did not match!')
     else:
-        if openid_profile.email == email and openid_profile.openid_key == openid_key:
-            signals.consolidate_google_complete_add_identifer.send(sender=consolidate_google_complete,
-                                                                   identifier=username, user=request.user)
-            openid_profile.needs_google_crossdomain_merge = False
-            openid_profile.save()
-            logger.info('Service is %s'% request.session.get('service'))
-            return HttpResponseRedirect(reverse('socialauth_cas_login_page'))
+        logger.error('Signatures did not match!')
 
+    logger.error('Failed to consolidate Google OpenID.')
     return HttpResponseRedirect(reverse('socialauth_consolidate_google_failed'))
 
 # On Federation

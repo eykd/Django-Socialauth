@@ -229,7 +229,7 @@ def openid_done(request, provider=None):
                 session = dict(request.session)
                 login(request, user)
                 restore_session(request, session)
-                return HttpResponseRedirect(reverse('consolidate_google_confirm'))
+                return HttpResponseRedirect(reverse('socialauth_consolidate_google_confirm'))
 
             # if user is authenticated then login user through CAS
             elif user:
@@ -414,9 +414,9 @@ def consolidate_google_complete(request):
             logger.info('Service is %s'% request.session.get('service'))
             return HttpResponseRedirect(reverse('socialauth_cas_login_page'))
 
-    return HttpResponseRedirect(reverse('consolidate_google_failed'))
+    return HttpResponseRedirect(reverse('socialauth_consolidate_google_failed'))
 
 # On Federation
 def consolidate_google_failed(request):
-    return HttpResponse('Failed.')
+    return render_to_response('socialauth/consolidate_google_failed.html', context_instance=RequestContext(request))
 

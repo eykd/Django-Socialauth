@@ -27,14 +27,14 @@ urlpatterns = patterns('socialauth.views',
 
 #Other views.
 urlpatterns += patterns('socialauth.views',
-    url(r'^$', 'signin_complete', name='socialauth_signin_complete'),                    
-    url(r'^edit/profile/$', 'editprofile',  name='socialauth_editprofile'),                    
-    url(r'^logout/$', 'social_logout',  name='socialauth_social_logout'),
-    url(r'consolidate/google/confirm/$', 'consolidate_google_confirm', name='consolidate_google_confirm'),
-    url(r'consolidate/google/confirm/complete/$', 'consolidate_google_confirm_complete', name='consolidate_google_confirm_complete'),
-    url(r'consolidate/google/skip/$', 'consolidate_google_skip', name='consolidate_google_skip'),
-    url(r'consolidate/google/complete/$', 'consolidate_google_complete'),
-    url(r'consolidate/google/failed/$', 'consolidate_google_failed'),
-    url(r'consolidate/google/$', 'consolidate_google'),
+    url(r'^$', 'signin_complete', name='socialauth_signin_complete'),
+    url(r'^edit/profile/$', 'editprofile', name='socialauth_editprofile'),
+    url(r'^logout/$', 'social_logout', name='socialauth_social_logout'),
+    url(r'consolidate/google/confirm/$', 'consolidate_google_confirm', name='socialauth_consolidate_google_confirm'),
+    url(r'consolidate/google/confirm/complete/$', 'consolidate_google_confirm_complete', name='socialauth_consolidate_google_confirm_complete'),
+    url(r'consolidate/google/skip/$', 'consolidate_google_skip', name='socialauth_consolidate_google_skip'),
+    url(r'consolidate/google/complete/$', 'consolidate_google_complete', name='socialauth_consolidate_google_complete'),
+    url(r'consolidate/google/failed/$', 'consolidate_google_failed', name='socialauth_consolidate_google_failed'),
+    url(r'consolidate/google/$', 'consolidate_google', name='socialauth_consolidate_google'),
 ) 
 

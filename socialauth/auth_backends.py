@@ -45,7 +45,7 @@ class OpenIdBackend:
             return assoc.user
         except OpenidProfile.DoesNotExist:
             #fetch if openid provider provides any simple registration fields
-            logger.error('Creating a OpenidProfile')
+            logger.info('Creating a OpenidProfile')
             nickname = None
             email = None
             if request.openid and request.openid.sreg:

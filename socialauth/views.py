@@ -223,12 +223,13 @@ def openid_done(request, provider=None):
                             'signature': helpers.sign(user.username + openid_profile.email + federation_openid_key,
                                                       settings.CONSOLIDATE_GOOGLE_SECRET),
                             }
+                    logger.info(settings.CONSOLIDATE_GOOGLE_SECRET)
                     
                     return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_COMPLETE \
                             + '?' + urllib.urlencode(data))
 
                 else:
-                    logger.error('Google OpenID emails did not match. \n---\n%s\n%s---' % (request.session['google_email'], openid_profile.email))
+                    logger.error('Google OpenID emails did not match. \n---\n%s\n%s\n---' % (request.session['google_email'], openid_profile.email))
                     return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_FAILED)
 
             # From Federation
@@ -428,8 +429,12 @@ def consolidate_google_complete(request):
                 logger.error('OpenID emails or keys did not match! %s/%s -- %s/%s' % (openid_profile.email, email,
                                                                                       openid_profile.openid_key, openid_key))
         else:
-            logger.error('Signatures did not match! %s---\n%s\n%s\n---\n%s\n%s\n---\n%s\n%s---' % (
-                username, email, openid_profile.email, openid_key, openid_profile.openid_key, signature, verify_signature
+            logger.error('Signatures did not match! \n%s---\n%s\n%s\n---\n%s\n%s\n---\n%s\n%s\n---%s' % (
+                username,
+                email, openid_profile.email,
+                openid_key, openid_profile.openid_key,
+                signature, verify_signature,
+                settings.CONSOLIDATE_GOOGLE_SECRET,
                 ))
 
     logger.error('Failed to consolidate Google OpenID.')

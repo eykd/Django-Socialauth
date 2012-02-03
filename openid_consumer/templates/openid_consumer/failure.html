@@ -6,8 +6,12 @@
 
 {% block content %}
 
-<h3>OpenID failed:</h3>
+<h3>OpenID Failed to Authenticate:</h3>
 
 <p>{{ message|escape }}</p>
+
+<p>You can <a href="/account/social/openid/">try this again</a>, or skip this step and 
+   <a href="/account/">continue signing in</a>.
+</p>
 
 {% endblock %}

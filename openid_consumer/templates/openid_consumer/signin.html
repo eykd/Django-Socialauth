@@ -2,33 +2,16 @@
 
 {% block title %}
 
-{{ block.super }} - Sign in with your OpenID
-
-{% endblock %}
+{{ block.super }} Sign in with your OpenID {% endblock %}
 
 {% block content %}
 
 <h3>Sign in with your OpenID</h3>
-
+<a href='http://openid.net' target='_blank'>What is OpenID?</a>
 <form action="{{ action }}" method="post">
 	{% csrf_token %}
-<p><input class="openid" type="text" name="openid_url"> <input type="submit" value="Sign in"></p>
+<p><input class="openid" type="text" name="openid_url"></p>
+<p><input type="submit" value="Sign in"></p>
 </form>
 
-<br /><br /><br /><br />
-
-
 {% endblock %}
-
-
-{#
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<head>
-<title>Sign in with your OpenID</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
-
-<body>
-</body>
-</html>
-#}

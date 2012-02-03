@@ -220,9 +220,10 @@ def openid_done(request, provider=None):
                     data = {'username': user.username,
                             'email': openid_profile.email,
                             'openid_key': federation_openid_key,
-                            'signature': helpers.sign(user.username + openid_profile.email + federation_openid_key,
-                                                      settings.CONSOLIDATE_GOOGLE_SECRET),
                             }
+                    data['signature'] = helpers.sign(data['username'] + data['email'] + data['openid_key'],
+                                                     settings.CONSOLIDATE_GOOGLE_SECRET)
+
                     logger.info(settings.CONSOLIDATE_GOOGLE_SECRET)
                     
                     return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_COMPLETE \

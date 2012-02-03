@@ -42,6 +42,10 @@ class OpenIdBackend:
             logger.info("assoc.nickname: %s", assoc.nickname)
             logger.info("assoc.is_username_valid: %s", assoc.is_username_valid)
             logger.info("assoc.email: %s", assoc.email)
+            if assoc.email.endswith('@socialauth'):
+                assoc.email = request.openid.ax.getSingle('http://axschema.org/contact/email', None)
+                logger.info('Updating existing OpenidProfile with correct openid email')
+                assoc.save()
             return assoc.user
         except OpenidProfile.DoesNotExist:
             #fetch if openid provider provides any simple registration fields

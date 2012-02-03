@@ -386,6 +386,7 @@ def consolidate_google_confirm(request):
                                   {'user': request.user},
                                   context_instance=RequestContext(request))
 
+@login_required
 def consolidate_google_confirm_complete(request):
     openid_profile = OpenidProfile.objects.get(user=request.user)
     return HttpResponseRedirect(settings.CONSOLIDATE_GOOGLE_LOGIN + '?' \
@@ -400,6 +401,7 @@ def consolidate_google_skip(request):
     return HttpResponseRedirect(reverse('socialauth_cas_login_page'))
 
 # On Federation (redirect from Apocalypse)
+@login_required
 def consolidate_google_complete(request):
     """ Verifies params to the current User
         Completes the Google merge

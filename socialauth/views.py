@@ -428,7 +428,9 @@ def consolidate_google_complete(request):
                 logger.error('OpenID emails or keys did not match! %s/%s -- %s/%s' % (openid_profile.email, email,
                                                                                       openid_profile.openid_key, openid_key))
     else:
-        logger.error('Signatures did not match!')
+        logger.error('Signatures did not match! %s - %s - %s :: %s / %s' % (
+            username, email, openid_key, signature, verify_signature
+            ))
 
     logger.error('Failed to consolidate Google OpenID.')
     return HttpResponseRedirect(reverse('socialauth_consolidate_google_failed'))

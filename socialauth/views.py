@@ -411,12 +411,12 @@ def consolidate_google_complete(request):
     verify_signature = helpers.sign(username + email + openid_key,
                                     settings.CONSOLIDATE_GOOGLE_SECRET)
 
-    if verify_signature == signature:
-        try:
-            openid_profile = OpenidProfile.objects.get(user=request.user)
-        except OpenidProfile.DoesNotExist:
-            logger.error('OpenID profile for user does not exist!')
-        else:
+    try:
+        openid_profile = OpenidProfile.objects.get(user=request.user)
+    except OpenidProfile.DoesNotExist:
+        logger.error('OpenID profile for user does not exist!')
+    else:
+        if verify_signature == signature:
             if openid_profile.email == email and openid_profile.openid_key == openid_key:
                 signals.consolidate_google_complete_add_identifer.send(sender=consolidate_google_complete,
                                                                        identifier=username, user=request.user)
@@ -427,10 +427,10 @@ def consolidate_google_complete(request):
             else:
                 logger.error('OpenID emails or keys did not match! %s/%s -- %s/%s' % (openid_profile.email, email,
                                                                                       openid_profile.openid_key, openid_key))
-    else:
-        logger.error('Signatures did not match! %s\n%s / %s\n%s / %s\n%s / %s' % (
-            username, email, openid_profile.email, openid_key, openid_profile.openid_key, signature, verify_signature
-            ))
+        else:
+            logger.error('Signatures did not match! %s\n%s / %s\n%s / %s\n%s / %s' % (
+                username, email, openid_profile.email, openid_key, openid_profile.openid_key, signature, verify_signature
+                ))
 
     logger.error('Failed to consolidate Google OpenID.')
     return HttpResponseRedirect(reverse('socialauth_consolidate_google_failed'))

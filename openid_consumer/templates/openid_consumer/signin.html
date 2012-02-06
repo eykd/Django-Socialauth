@@ -10,7 +10,7 @@
 <a href='http://openid.net' target='_blank'>What is OpenID?</a>
 <form action="{{ action }}" method="post">
 	{% csrf_token %}
-<p><input class="openid" type="text" name="openid_url"></p>
+<p><input class="openid" type="text" name="openid_url" autofocus="autofocus"></p>
 <p><input type="submit" value="Sign in"></p>
 </form>
 

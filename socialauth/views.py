@@ -398,7 +398,7 @@ def consolidate_google_skip(request):
     openid_profile.needs_google_crossdomain_merge = False
     openid_profile.save()
 
-    return HttpResponseRedirect(settings.SOCIALAUTH_CAS_LOGIN_URL)
+    return HttpResponseRedirect(reverse('cas_socialauth_login'))
 
 # On Federation (redirect from Apocalypse)
 @login_required
@@ -427,7 +427,7 @@ def consolidate_google_complete(request):
                 openid_profile.needs_google_crossdomain_merge = False
                 openid_profile.save()
                 logger.info('Service is %s'% request.session.get('service'))
-                return HttpResponseRedirect(settings.SOCIALAUTH_CAS_LOGIN_URL)
+                return HttpResponseRedirect(reverse('cas_socialauth_login'))
             else:
                 logger.error('OpenID emails or keys did not match! %s/%s -- %s/%s' % (openid_profile.email, email,
                                                                                       openid_profile.openid_key, openid_key))
